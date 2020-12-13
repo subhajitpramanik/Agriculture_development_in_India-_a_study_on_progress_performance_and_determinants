@@ -1,4 +1,4 @@
-Agriculture development in India: a study on progress, performance and determinants.
+***Agriculture development in India: a study on progress, performance and determinants.***
 
 Here we have made an econometric model which has analysed the available data (1993 - 2016) of agricultural credit, land, rain, employment with the total agricultural output. This model will show us the econometric analysis and statistical relevances of the selected factors with the total agricultural production every year. In the conclusion, we can see how these factors are impacting the overall agricultural prodection.
 
