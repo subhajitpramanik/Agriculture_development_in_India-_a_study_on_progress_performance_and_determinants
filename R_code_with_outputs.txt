@@ -1,0 +1,265 @@
+> #multiple linear regression			#final data file used for analysis is minty.xlsx
+>
+> #importing data
+> library(readxl)
+Warning message:
+package ‘readxl’ was built under R version 4.0.3 
+> minty <- read_excel("C:/Users/subha/Downloads/minty.xlsx")	#while running please change the path according to the local pathway to the file
+> View(minty)
+> #matrix of scatter plots
+> pairs(minty[,1:6])
+> #correlation coefficient matrix
+> round(cor(minty, method="pearson"), 2)
+           years agr_val_ad agr_ld
+years       1.00       0.94  -0.93
+agr_val_ad  0.94       1.00  -0.85
+agr_ld     -0.93      -0.85   1.00
+agr_crd     0.39       0.28  -0.43
+rain_fl     0.04       0.04  -0.03
+agr_emp    -0.98      -0.98   0.88
+           agr_crd rain_fl agr_emp
+years         0.39    0.04   -0.98
+agr_val_ad    0.28    0.04   -0.98
+agr_ld       -0.43   -0.03    0.88
+agr_crd       1.00   -0.07   -0.33
+rain_fl      -0.07    1.00   -0.06
+agr_emp      -0.33   -0.06    1.00
+> #or
+>
+> library(Hmisc)
+Loading required package: lattice
+Loading required package: survival
+Loading required package: Formula
+
+Attaching package: ‘Hmisc’
+
+The following objects are masked from ‘package:base’:
+
+    format.pval, units
+
+Warning messages:
+1: package ‘Hmisc’ was built under R version 4.0.3 
+2: package ‘Formula’ was built under R version 4.0.3 
+> rcorr(as.matrix(minty))
+           years agr_val_ad agr_ld
+years       1.00       0.94  -0.93
+agr_val_ad  0.94       1.00  -0.85
+agr_ld     -0.93      -0.85   1.00
+agr_crd     0.39       0.28  -0.43
+rain_fl     0.04       0.04  -0.03
+agr_emp    -0.98      -0.98   0.88
+           agr_crd rain_fl agr_emp
+years         0.39    0.04   -0.98
+agr_val_ad    0.28    0.04   -0.98
+agr_ld       -0.43   -0.03    0.88
+agr_crd       1.00   -0.07   -0.33
+rain_fl      -0.07    1.00   -0.06
+agr_emp      -0.33   -0.06    1.00
+
+n= 24 
+
+
+P
+           years  agr_val_ad agr_ld
+years             0.0000     0.0000
+agr_val_ad 0.0000            0.0000
+agr_ld     0.0000 0.0000           
+agr_crd    0.0588 0.1870     0.0350
+rain_fl    0.8576 0.8603     0.8779
+agr_emp    0.0000 0.0000     0.0000
+           agr_crd rain_fl agr_emp
+years      0.0588  0.8576  0.0000 
+agr_val_ad 0.1870  0.8603  0.0000 
+agr_ld     0.0350  0.8779  0.0000 
+agr_crd            0.7431  0.1161 
+rain_fl    0.7431          0.7815 
+agr_emp    0.1161  0.7815         
+> #fitting multiple linear regression
+> mlrm<-lm(agr_val_ad~agr_ld+agr_crd+rain_fl+agr_emp, data=minty)
+> mlrm
+
+Call:
+lm(formula = agr_val_ad ~ agr_ld + agr_crd + rain_fl + agr_emp, 
+    data = minty)
+
+Coefficients:
+(Intercept)       agr_ld      agr_crd  
+ -9.009e+02    1.156e-03   -5.443e-06  
+    rain_fl      agr_emp  
+ -1.166e-02   -1.783e+01  
+
+> summary(mlrm)
+
+Call:
+lm(formula = agr_val_ad ~ agr_ld + agr_crd + rain_fl + agr_emp, 
+    data = minty)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-29.544 -12.677  -1.236  12.965  42.965 
+
+Coefficients:
+              Estimate Std. Error
+(Intercept) -9.009e+02  2.816e+03
+agr_ld       1.156e-03  1.602e-03
+agr_crd     -5.443e-06  6.240e-06
+rain_fl     -1.166e-02  1.918e-02
+agr_emp     -1.783e+01  1.529e+00
+            t value Pr(>|t|)    
+(Intercept)  -0.320    0.753    
+agr_ld        0.722    0.479    
+agr_crd      -0.872    0.394    
+rain_fl      -0.608    0.551    
+agr_emp     -11.663 4.19e-10 ***
+---
+Signif. codes:  
+  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’
+  0.1 ‘ ’ 1
+
+Residual standard error: 20.53 on 19 degrees of freedom
+Multiple R-squared:  0.9661,	Adjusted R-squared:  0.9589 
+F-statistic: 135.3 on 4 and 19 DF,  p-value: 1.115e-13
+
+> #confidence interval for the regression coefficients at 95% level of confidence
+> confint(mlrm, level=0.95)
+                    2.5 %        97.5 %
+(Intercept) -6.795011e+03  4.993282e+03
+agr_ld      -2.196283e-03  4.508745e-03
+agr_crd     -1.850402e-05  7.617636e-06
+rain_fl     -5.180887e-02  2.849696e-02
+agr_emp     -2.102976e+01 -1.463015e+01
+> #extract model residuals 
+> resid(mlrm)
+         1          2          3 
+  2.024342  13.989503  15.748703 
+         4          5          6 
+ 26.821839  12.623063  -3.808562 
+         7          8          9 
+  1.760434 -11.534053  -9.986054 
+        10         11         12 
+-24.498485   6.547645 -29.544393 
+        13         14         15 
+-23.129346 -20.200687   7.172473 
+        16         17         18 
+-21.334721  -5.915013  42.965209 
+        19         20         21 
+ 28.202618 -12.641491 -12.784953 
+        22         23         24 
+  1.336202  -4.805787  20.991515 
+> #describing data
+>
+>
+> library(psych)
+
+Attaching package: ‘psych’
+
+The following object is masked from ‘package:Hmisc’:
+
+    describe
+
+The following objects are masked from ‘package:ggplot2’:
+
+    %+%, alpha
+
+Warning message:
+package ‘psych’ was built under R version 4.0.3 
+> describe(minty)
+           vars  n       mean        sd
+years         1 24    2004.50      7.07
+agr_val_ad    2 24     184.43    101.31
+agr_ld        3 24 1802896.67   5989.99
+agr_crd       4 24  652198.04 769283.92
+rain_fl       5 24    1091.42    224.58
+agr_emp       6 24      55.13      6.00
+               median    trimmed
+years         2004.50    2004.50
+agr_val_ad     135.44     177.35
+agr_ld     1801875.00 1802543.00
+agr_crd     534102.50  523198.60
+rain_fl       1107.45    1125.83
+agr_emp         56.36      55.40
+                 mad        min
+years           8.90    1993.00
+agr_val_ad     71.45      75.08
+agr_ld       7086.83 1795730.00
+agr_crd    552276.65   51323.00
+rain_fl       113.34     129.50
+agr_emp         6.66      45.14
+                  max      range  skew
+years         2016.00      23.00  0.00
+agr_val_ad     375.52     300.44  0.59
+agr_ld     1813820.00   18090.00  0.33
+agr_crd    3856519.00 3805196.00  2.92
+rain_fl       1297.30    1167.80 -3.17
+agr_emp         62.27      17.13 -0.41
+           kurtosis        se
+years         -1.35      1.44
+agr_val_ad    -1.36     20.68
+agr_ld        -1.44   1222.70
+agr_crd        9.65 157029.42
+rain_fl       11.12     45.84
+agr_emp       -1.39      1.23
+> 
+> 
+> #drawing correlation plots
+> install.packages("ggcorrplot")
+Error in install.packages : Updating loaded packages
+
+Restarting R session...
+
+> install.packages("ggcorrplot")
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Installing package into ‘C:/Users/subha/OneDrive/Documents/R/win-library/4.0’
+(as ‘lib’ is unspecified)
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.0/ggcorrplot_0.1.3.zip'
+Content type 'application/zip' length 28713 bytes (28 KB)
+downloaded 28 KB
+
+package ‘ggcorrplot’ successfully unpacked and MD5 sums checked
+
+The downloaded binary packages are in
+	C:\Users\subha\AppData\Local\Temp\RtmpKamYD4\downloaded_packages
+> library(ggcorrplot)
+Loading required package: ggplot2
+Warning messages:
+1: package ‘ggcorrplot’ was built under R version 4.0.3 
+2: package ‘ggplot2’ was built under R version 4.0.3 
+> ggcorrplot(cor(minty))
+> 
+> #creating scatter plots
+> library(ggplot2)
+> library(ggcorrplot)
+> tail(minty)
+# A tibble: 6 x 6
+  years agr_val_ad agr_ld agr_crd rain_fl
+  <dbl>      <dbl>  <dbl>   <dbl>   <dbl>
+1  2011       313. 1.80e6  712117   1212.
+2  2012       308. 1.80e6  919017   1095.
+3  2013       318. 1.80e6 1206251   1073.
+4  2014       342. 1.80e6  736984   1262.
+5  2015       340. 1.80e6  950860   1082.
+6  2016       376. 1.80e6 1104363   1007.
+# ... with 1 more variable: agr_emp <dbl>			# All the plots we got here are available in the file "plots"
+> sp <- ggplot(data=minty , aes(x=agr_ld,y=agr_val_ad))
+> sp + geom_point()
+> sp <- sp + geom_point()
+> sp + ggtitle("first scatter plot")
+> sp + ggtitle("first scatter plot") + stat_smooth(method="lm",se=FALSE)
+`geom_smooth()` using formula 'y ~ x'
+> sp <- ggplot(data=minty , aes(x=agr_crd,y=agr_val_ad))
+> sp + geom_point()
+> sp <- sp + geom_point()
+> sp + ggtitle("second scatter plot") + stat_smooth(method="lm",se=FALSE)
+`geom_smooth()` using formula 'y ~ x'
+> sp <- ggplot(data=minty , aes(x=rain_fl,y=agr_val_ad))
+> sp <- sp + geom_point()
+> sp + ggtitle("third scatter plot") + stat_smooth(method="lm",se=FALSE)
+`geom_smooth()` using formula 'y ~ x'
+> sp <- ggplot(data=minty , aes(x=agr_emp,y=agr_val_ad))
+> sp + geom_point()
+> sp <- sp + geom_point()
+> sp + ggtitle("fourth scatter plot") + stat_smooth(method="lm",se=FALSE)
+`geom_smooth()` using formula 'y ~ x'
+> mlrm2 <- aov(agr_val_ad~agr_ld+agr_crd+rain_fl+agr_emp, data=minty)
